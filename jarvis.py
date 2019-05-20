@@ -91,13 +91,17 @@ if __name__ == "__main__":
             print(results)
             speak(results)
         elif 'read it' == query:
-            temp = clipboard.paste()
-            pya.hotkey('ctrl', 'c')
-            sleep(.01)
-            x = clipboard.paste()
-            print(x)
-            speak(x)
-            clipboard.copy(temp)
+            try:
+                temp = clipboard.paste()
+                pya.hotkey('ctrl', 'c')
+                sleep(.01)
+                x = clipboard.paste()
+                print(x)
+                speak(x)
+                clipboard.copy(temp)
+            except Exception as e:
+                print(e)
+                speak("sir can you please try it again")
         elif 'calculate' in query:
             query = query.replace('calculate', '')
             try:
