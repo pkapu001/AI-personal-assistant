@@ -1,6 +1,5 @@
-import pyttsx3
 import datetime
-import speech_recognition as sr
+
 import wikipedia
 import webbrowser
 import os
@@ -8,71 +7,28 @@ import smtplib
 import config
 import random
 from googletrans import Translator
-import gtts
 from gtts import gTTS
-import playsound
 import winsound
 import pyglet
 import sys
 from time import sleep
-import clipboard
-import pyautogui as pya
-import vlc
+
+import actions as asistant
 
 
 chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
-engine = pyttsx3.init('sapi5')
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-
-
-def speak(audio):
-
-    engine.say(audio)
-    engine.runAndWait()
 
 
 def wishMe():
     hour = int(datetime.datetime.now().hour)
     if(hour >= 0 and hour < 12):
-        speak("good morning!")
+        asistant.speak("good morning!")
     elif hour >= 12 and hour < 18:
-        speak("good afternoon!")
+        asistant.speak("good afternoon!")
     else:
-        speak("Good evening!")
+        asistant.speak("Good evening!")
 
-    speak(" Jarvis at your service SIR!")
-
-
-def takecommand():
-    # it takes microphone input from user and returns string output
-
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        r.pause_threshold = 0.5
-        r.energy_threshold = 1500
-        print('Listening sir...')
-        audio = r.listen(source)
-    try:
-        print("recoganizing...")
-        query = r.recognize_google(audio, language='en-in')
-        print(f'sir u said : {query}')
-    except Exception as e:
-        # print(e)
-        #  print("can u please repeat that!")
-        return "None"
-    return query.lower()
-
-
-def sendEmail(to, content, subject):
-    msg = f'Subject: {subject}\n\n{content}'
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login(config.EMAIL, config.Password)
-    server.sendmail(config.EMAIL, to, msg)
-    server.close()
-    speak('email has been sent')
+    asistant.speak(" Jarvis at your service SIR!")
 
 
 if __name__ == "__main__":
@@ -80,63 +36,52 @@ if __name__ == "__main__":
     browser = webbrowser.get(chrome_path)
     while True:
         # os.system('cls' if os.name == 'nt' else 'clear')
-        query = takecommand()
+        query = asistant.takecommand()
 
         if 'wikipedia' in query:
-
             query = query.replace('wikipedia', '')
-            speak(f'Searching wikipedia... for {query}')
+            asistant.speak(f'Searching wikipedia... for {query}')
             results = wikipedia.summary(query, sentences=2)
-            speak("according to wikipedia")
+            asistant.speak("according to wikipedia")
             print(results)
-            speak(results)
+            asistant.speak(results)
         elif 'read it' == query:
-            try:
-                temp = clipboard.paste()
-                pya.hotkey('ctrl', 'c')
-                sleep(.01)
-                x = clipboard.paste()
-                print(x)
-                speak(x)
-                clipboard.copy(temp)
-            except Exception as e:
-                print(e)
-                speak("sir can you please try it again")
+            asistant.read_it()
         elif 'calculate' in query:
             query = query.replace('calculate', '')
             try:
                 result = eval(query)
-                speak(f'answer is, {result}')
+                asistant.speak(f'answer is, {result}')
             except Exception as e:
-                speak("sorry sir i cant calculate that")
+                asistant.speak("sorry sir i cant calculate that")
 
         elif 'search google for' in query:
             query = query.replace('search google for', "")
-            speak(f'opening google search for {query}')
+            asistant.speak(f'opening google search for {query}')
             url = "http://www.google.com/search?q="+query
             browser.open_new_tab(url)
         elif 'search images of' in query:
             query = query.replace('search images of', '')
-            speak(f'searching google for images of {query}')
+            asistant.speak(f'searching google for images of {query}')
             url = f'https://www.google.com/search?tbm=isch&q={query}'
             browser.open_new_tab(url)
         elif 'search youtube for' in query:
             query = query.replace('search youtube for', '')
-            speak(f'opening youtube search for {query}')
+            asistant.speak(f'opening youtube search for {query}')
             url = 'https://www.youtube.com/results?search_query='+query
             browser.open_new_tab(url)
         elif 'translate to' in query:
             query = query.replace('translate to ', '')
-            speak("what is the text")
-            msg = takecommand()
+            asistant.speak("what is the text")
+            msg = asistant.takecommand()
             while msg == 'None':
-                speak('sir can you please repeat')
-                msg = takecommand()
+                asistant.speak('sir can you please repeat')
+                msg = asistant.takecommand()
             try:
                 result = Translator().translate(msg, config.LANGCODES.get(query))
             except Exception as e:
                 print(e)
-                speak(f'cant find the language {query}')
+                asistant.speak(f'cant find the language {query}')
                 continue
 
             tts = gTTS(result.text, config.LANGCODES.get(query), True)
@@ -148,95 +93,38 @@ if __name__ == "__main__":
             sleep(music.duration)  # prevent from killing
             os.remove(filename)  # remove temperory file
 
-            # speak(f'{msg} in {query} is {result.pronunciation}')
+            # asistant.speak(f'{msg} in {query} is {result.pronunciation}')
 
         elif 'open youtube' in query:
-            speak('opening youtube for you sir')
+            asistant.speak('opening youtube for you sir')
             browser.open_new_tab('youtube.com')
         elif 'open google' in query:
-            speak('opening google for you sir')
+            asistant.speak('opening google for you sir')
             browser.open_new_tab('google.com')
         elif 'open facebook' in query:
-            speak('opening facebook for you sir')
+            asistant.speak('opening facebook for you sir')
             browser.open_new_tab('facebook.com')
         elif 'open whatsapp' in query:
-            speak('opening whatsapp web for you sir')
+            asistant.speak('opening whatsapp web for you sir')
             browser.open_new_tab('https://web.whatsapp.com/')
         elif 'open messages' in query:
-            speak('opening messages for you sir')
+            asistant.speak('opening messages for you sir')
             browser.open_new_tab(
                 'https://messages.google.com/web/conversations')
         elif 'play music' in query:
-            speak("picking a song for you sir")
-            music_dir = r'R:\Music'
-            folders = os.listdir(music_dir)
-            folder = random.choice(folders)
-
-            songs_dir = os.path.join(music_dir, folder)
-            songs = os.listdir(songs_dir)
-            song = random.choice(songs)
-
-            while 'mp3' not in song:
-                song = random.choice(songs)
-
-            songpath = os.path.join(songs_dir, song)
-            print(songpath)
-            # instance = vlc.Instance()
-            # player = instance.media_player_new()
-            # player.set_mrl(songpath)
-            # player.play()
-            os.startfile(os.path.join(songs_dir, song))
-        # elif 'stop music' in query:
-        #     player.stop()
-        # elif 'close music' in query:
-        #     player.close()
-        # elif 'resume music' in query:
-        #     player.unpause()
+            asistant.play_music()
         elif 'what is the time' in query:
             srtTime = datetime.datetime.now().strftime('%H:%M:%M')
-            speak('sir the is')
-            speak(srtTime)
+            asistant.speak('sir the is')
+            asistant.speak(srtTime)
         elif 'open game' in query:
-            speak('opening PUBG for you sir')
+            asistant.speak('opening PUBG for you sir')
             pubg_path = "R:/GAMES/pubg Lite/PUBGLite/Launcher.exe"
             os.startfile(pubg_path)
         elif 'open my computer' in query:
             os.startfile("R:/")
         elif 'send email' in query:
-            try:
-                speak("whom do you want to send email to?")
-                name = takecommand()
-                while name not in config.contacts:
-                    speak(f'{name} not in your contacts')
-                    name = takecommand()
-                to = config.contacts.get(name)
-                speak('what is the subject of the email?')
-                subject = takecommand()
-                while 'None' == subject:
-                    speak('please repeat the subject')
-                    subject = takecommand()
-
-                speak(' what is your message sir')
-                content = takecommand()
-                while 'None' == content:
-                    speak('please repeat the message')
-                    content = takecommand()
-                speak(
-                    f"do you want me to send the email with message: {content} ")
-                conform = takecommand()
-                while 'yes' not in conform and 'no' not in conform:
-                    speak('please say yes or no')
-                    conform = takecommand()
-
-                if 'yes' in conform:
-                    speak('sending email sir')
-                    sendEmail(to, content, subject)
-                elif 'no' == conform:
-                    speak('mission aborted')
-
-            except Exception as e:
-                print(e)
-                speak('cudnt send email')
+            asistant.process_email()
         elif 'exit' == query:
-            speak('it was pleasure helping you sir')
+            asistant.speak('it was pleasure helping you sir')
             break
