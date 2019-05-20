@@ -1,3 +1,5 @@
+#edit this file and rename it to config.py
+
 EMAIL = "your email id"			#edit this 
 Password = "your password"		#edit this
 
