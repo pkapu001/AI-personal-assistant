@@ -17,13 +17,13 @@ import sys
 from time import sleep
 import clipboard
 import pyautogui as pya
+import vlc
 
 
 chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
-print(voices[1].id)
 
 
 def speak(audio):
@@ -49,8 +49,8 @@ def takecommand():
 
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        r.pause_threshold = 1
-        r.energy_threshold = 1000
+        r.pause_threshold = 0.5
+        r.energy_threshold = 1500
         print('Listening sir...')
         audio = r.listen(source)
     try:
@@ -83,8 +83,9 @@ if __name__ == "__main__":
         query = takecommand()
 
         if 'wikipedia' in query:
-            speak('Searching wikipedia...')
+
             query = query.replace('wikipedia', '')
+            speak(f'Searching wikipedia... for {query}')
             results = wikipedia.summary(query, sentences=2)
             speak("according to wikipedia")
             print(results)
@@ -97,10 +98,23 @@ if __name__ == "__main__":
             print(x)
             speak(x)
             clipboard.copy(temp)
+        elif 'calculate' in query:
+            query = query.replace('calculate', '')
+            try:
+                result = eval(query)
+                speak(f'answer is, {result}')
+            except Exception as e:
+                speak("sorry sir i cant calculate that")
+
         elif 'search google for' in query:
             query = query.replace('search google for', "")
             speak(f'opening google search for {query}')
             url = "http://www.google.com/search?q="+query
+            browser.open_new_tab(url)
+        elif 'search images of' in query:
+            query = query.replace('search images of', '')
+            speak(f'searching google for images of {query}')
+            url = f'https://www.google.com/search?tbm=isch&q={query}'
             browser.open_new_tab(url)
         elif 'search youtube for' in query:
             query = query.replace('search youtube for', '')
@@ -150,19 +164,30 @@ if __name__ == "__main__":
                 'https://messages.google.com/web/conversations')
         elif 'play music' in query:
             speak("picking a song for you sir")
-            music_dir = 'R:/Music'
+            music_dir = r'R:\Music'
             folders = os.listdir(music_dir)
-            folder = folders[random.randint(0, len(folders)-1)]
+            folder = random.choice(folders)
+
             songs_dir = os.path.join(music_dir, folder)
             songs = os.listdir(songs_dir)
-            song = songs[random.randint(0, len(songs)-1)]
-            while 'mp3' not in song:
-                song = songs[random.randint(0, len(songs)-1)]
+            song = random.choice(songs)
 
-            s = os.startfile(os.path.join(
-                songs_dir, song))
-        elif 'stop music' in query:
-            os.close(s)
+            while 'mp3' not in song:
+                song = random.choice(songs)
+
+            songpath = os.path.join(songs_dir, song)
+            print(songpath)
+            # instance = vlc.Instance()
+            # player = instance.media_player_new()
+            # player.set_mrl(songpath)
+            # player.play()
+            os.startfile(os.path.join(songs_dir, song))
+        # elif 'stop music' in query:
+        #     player.stop()
+        # elif 'close music' in query:
+        #     player.close()
+        # elif 'resume music' in query:
+        #     player.unpause()
         elif 'what is the time' in query:
             srtTime = datetime.datetime.now().strftime('%H:%M:%M')
             speak('sir the is')
