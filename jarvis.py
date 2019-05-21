@@ -1,5 +1,5 @@
 import datetime
-
+from threading import Thread
 import wikipedia
 import webbrowser
 import os
@@ -12,8 +12,9 @@ import winsound
 import pyglet
 import sys
 from time import sleep
-
+import keyboard
 import actions as asistant
+from threading import Thread
 
 
 chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
@@ -34,6 +35,7 @@ def wishMe():
 if __name__ == "__main__":
     wishMe()
     browser = webbrowser.get(chrome_path)
+    keyboard.add_hotkey('ctrl+r', asistant.read_it, suppress=True)
     while True:
         # os.system('cls' if os.name == 'nt' else 'clear')
         query = asistant.takecommand()

@@ -8,13 +8,11 @@ import smtplib
 import config
 import speech_recognition as sr
 
-engine = pyttsx3.init('sapi5')
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-
 
 def speak(audio):
-
+    engine = pyttsx3.init('sapi5')
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)
     engine.say(audio)
     engine.runAndWait()
 
@@ -76,7 +74,7 @@ def sendEmail(to, content, subject):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
-    server.login(config.EMAIL, config.Password)
+    server.login(config.EMAIL, os.environ['gmail_password'])
     server.sendmail(config.EMAIL, to, msg)
     server.close()
     speak('email has been sent')
