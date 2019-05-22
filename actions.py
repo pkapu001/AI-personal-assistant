@@ -17,6 +17,15 @@ def speak(audio):
     engine.runAndWait()
 
 
+def stop_speak():
+    engine = pyttsx3.init('sapi5')
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)
+    engine.stop()
+    engine.say('')
+    engine.runAndWait()
+
+
 def takecommand():
     # it takes microphone input from user and returns string output
     r = sr.Recognizer()

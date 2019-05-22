@@ -36,6 +36,7 @@ if __name__ == "__main__":
     wishMe()
     browser = webbrowser.get(chrome_path)
     keyboard.add_hotkey('ctrl+r', asistant.read_it, suppress=True)
+    keyboard.add_hotkey('ctrl+e', asistant.stop_speak, suppress=True)
     while True:
         # os.system('cls' if os.name == 'nt' else 'clear')
         query = asistant.takecommand()
