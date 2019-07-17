@@ -1,0 +1,10 @@
+pyautogui
+wikipedia
+pyglet
+keyboard
+selenium
+googletrans
+gTTS
+pyttsx3
+clipboard
+SpeechRecognition

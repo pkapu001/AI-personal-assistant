@@ -7,10 +7,11 @@ from time import sleep
 import smtplib
 import config
 import speech_recognition as sr
+import keyboard
 
 
 def speak(audio):
-    engine = pyttsx3.init('sapi5')
+    engine = pyttsx3.init()
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[1].id)
     engine.say(audio)

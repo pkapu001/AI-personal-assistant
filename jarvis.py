@@ -1,3 +1,5 @@
+#!C:/Users/rajma/Anaconda3/python
+
 import datetime
 from threading import Thread
 import wikipedia
@@ -15,6 +17,7 @@ from time import sleep
 import keyboard
 import actions as asistant
 from threading import Thread
+from selenium import webdriver
 
 
 chrome_path = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s'
@@ -54,7 +57,7 @@ if __name__ == "__main__":
             query = query.replace('calculate', '')
             try:
                 result = eval(query)
-                asistant.speak(f'answer is, {result}')
+                asistant.speak(f'{query}, =  {result}')
             except Exception as e:
                 asistant.speak("sorry sir i cant calculate that")
 
@@ -97,7 +100,6 @@ if __name__ == "__main__":
             os.remove(filename)  # remove temperory file
 
             # asistant.speak(f'{msg} in {query} is {result.pronunciation}')
-
         elif 'open youtube' in query:
             asistant.speak('opening youtube for you sir')
             browser.open_new_tab('youtube.com')
@@ -116,6 +118,28 @@ if __name__ == "__main__":
                 'https://messages.google.com/web/conversations')
         elif 'play music' in query:
             asistant.play_music()
+        elif 'play' in query:
+            browser = webdriver.Chrome(
+                r"R:\Softwares\chromedriver_win32\chromedriver.exe")
+            query = query.replace('play', '')
+            url = r'https://www.youtube.com/results?search_query=' + query
+            browser.get(url)
+            try:
+                elem = browser.find_element_by_css_selector(
+                    r'#contents > ytd-video-renderer:nth-child(1)')
+            except Exception as e:
+                elem = browser.find_element_by_css_selector(
+                    r'#contents > ytd-video-renderer:nth-child(2)')
+            elem.click()
+            print('wait 2.5 sec')
+
+            try:
+                sleep(8)
+                elem = browser.find_element_by_css_selector(
+                    r'#skip-button\:b > span > button')
+                elem.click()
+            except Exception as e:
+                print(e)
         elif 'what is the time' in query:
             srtTime = datetime.datetime.now().strftime('%H:%M:%M')
             asistant.speak('sir the is')
@@ -128,6 +152,9 @@ if __name__ == "__main__":
             os.startfile("R:/")
         elif 'send email' in query:
             asistant.process_email()
+        elif query.find('type') == 0:
+            query = query.replace('type ', '')
+            keyboard.write(query)
         elif 'exit' == query:
             asistant.speak('it was pleasure helping you sir')
             break
